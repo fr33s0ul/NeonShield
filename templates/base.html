@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NeonShield</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+    <style>
+        .new-cve {
+            color: red;
+            margin-left: 10px;
+        }
+
+        .pagination {
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            text-decoration: none;
+            color: #333;
+            padding: 5px;
+        }
+
+        .pagination .active {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>NeonShield</h1>
+    <form method="POST" action="/">
+        <input type="text" name="search" placeholder="Search by keyword">
+        <button type="submit">Search</button>
+    </form>
+    <hr>
+    {% for cve in cves %}
+    <div class="cve-entry">
+        <h3>
+            <a href="{{ cve.link }}" target="_blank">{{ cve.title }}</a>
+            {% if cve.is_new %}
+            <span class="new-cve">New!</span>
+            {% endif %}
+        </h3>
+        <p class="cve-info">
+            <span class="cve-label">CVE Number:</span>
+            <span class="cve-value">{{ cve.cve_number }}</span>
+        </p>
+        <p class="cve-info">
+            <span class="cve-label">Link:</span>
+            <a href="{{ cve.link }}" target="_blank" class="cve-value">{{ cve.link }}</a>
+        </p>
+        <p class="cve-info">
+            <span class="cve-label">Description:</span>
+            <span class="cve-value">{{ cve.description }}</span>
+        </p>
+        <p class="cve-info">
+            <span class="cve-label">Published Date:</span>
+            <span class="cve-value">{{ cve.published_date }}</span>
+        </p>
+        <p class="cve-info">
+            <span class="cve-label">Last Modified Date:</span>
+            <span class="cve-value">{{ cve.last_modified_date }}</span>
+        </p>
+    </div>
+    {% endfor %}
+
+    <div class="pagination">
+        {% if total_pages > 1 %}
+            {% if page > 1 %}
+                <a href="{{ url_for('index', page=page-1) }}">Previous</a>
+            {% endif %}
+            
+            {% if start_page > 1 %}
+                <a href="{{ url_for('index', page=1) }}">1</a>
+                {% if start_page > 2 %}
+                    <span>...</span>
+                {% endif %}
+            {% endif %}
+            
+            {% for p in range(start_page, end_page + 1) %}
+                {% if p == page %}
+                    <span class="active">{{ p }}</span>
+                {% else %}
+                    <a href="{{ url_for('index', page=p) }}">{{ p }}</a>
+                {% endif %}
+            {% endfor %}
+            
+            {% if end_page < total_pages %}
+                {% if end_page < total_pages - 1 %}
+                    <span>...</span>
+                {% endif %}
+                <a href="{{ url_for('index', page=total_pages) }}">{{ total_pages }}</a>
+            {% endif %}
+            
+            {% if page < total_pages %}
+                <a href="{{ url_for('index', page=page+1) }}">Next</a>
+            {% endif %}
+        {% endif %}
+    </div>
+</body>
+</html>
